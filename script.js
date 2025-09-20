@@ -2,29 +2,29 @@ class TypingSpeedTesterPro {
     constructor() {
         this.textSources = {
             general: [
-                "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet and is commonly used for typing practice.",
-                "Programming is the art of telling another human being what one wants the computer to do. It requires logical thinking and problem-solving skills.",
-                "Technology has revolutionized the way we live, work, and communicate. From smartphones to artificial intelligence, innovations continue to reshape our experiences."
+                "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet and is commonly used for typing practice. It helps test both speed and accuracy while providing a familiar phrase that most people recognize from their early typing lessons.",
+                "Programming is the art of telling another human being what one wants the computer to do. It requires logical thinking, problem-solving skills, and attention to detail. Good programmers write clean, efficient, and maintainable code that can be easily understood and modified by others.",
+                "Technology has revolutionized the way we live, work, and communicate with each other. From smartphones to artificial intelligence, innovations continue to reshape our daily experiences and create new opportunities for human connection and productivity in an increasingly digital world."
             ],
             literature: [
-                "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness. Charles Dickens captured the contradictions of his era.",
-                "Call me Ishmael. Some years ago having little money in my purse, I thought I would sail about and see the watery part of the world.",
-                "To be or not to be, that is the question. Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune."
+                "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness. Charles Dickens masterfully captured the contradictions and complexities of his era in this famous opening passage that continues to resonate with readers today.",
+                "Call me Ishmael. Some years ago, having little or no money in my purse and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. This is my substitute for pistol and ball, as Herman Melville wrote in his classic novel.",
+                "To be or not to be, that is the question: Whether it is nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles. Shakespeare's famous soliloquy explores the fundamental nature of human existence and choice."
             ],
             technology: [
-                "Artificial intelligence and machine learning are transforming how we interact with technology and process information in the digital age.",
-                "Cloud computing enables on-demand access to computing resources and applications over the internet without direct management.",
-                "Blockchain technology provides a decentralized ledger system that ensures transparency and security of digital transactions."
+                "Artificial intelligence and machine learning are transforming the way we interact with technology and process information in the digital age. These powerful technologies enable computers to learn from data, recognize complex patterns, and make intelligent decisions with minimal human intervention.",
+                "Cloud computing enables on-demand access to computing resources, storage, and applications over the internet without requiring direct active management by users. This revolutionary paradigm has made scalable computing power accessible to businesses of all sizes, fostering innovation and reducing infrastructure costs.",
+                "Blockchain technology provides a decentralized ledger system that ensures transparency, security, and immutability of digital transactions across multiple computers. By eliminating the need for traditional intermediaries, blockchain has the potential to revolutionize various sectors including finance and supply chain management."
             ],
             quotes: [
-                "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Stay hungry, stay foolish.",
-                "Yesterday is history, tomorrow is a mystery, today is a gift. That's why it's called the present.",
-                "Innovation distinguishes between a leader and a follower. Think different and challenge the status quo in everything you do."
+                "The only way to do great work is to love what you do. If you haven't found it yet, keep looking and don't settle for anything less than what truly inspires you. As Steve Jobs once said, stay hungry and stay foolish in your pursuit of meaningful work that fulfills your deepest aspirations.",
+                "Yesterday is history, tomorrow is a mystery, but today is a gift. That's why it's called the present, and we should focus on making the most of every moment we have. This wisdom reminds us to embrace the current moment rather than dwelling on the past or worrying about an uncertain future.",
+                "Innovation distinguishes between a leader and a follower, so think different and challenge the status quo in everything you do. True innovation requires courage to question conventional wisdom and the persistence to pursue revolutionary ideas even when they seem impossible to achieve at first glance."
             ],
             news: [
-                "Scientists have discovered a new species of deep-sea creature that can survive in extreme pressure conditions previously thought impossible for complex life forms.",
-                "Economic analysts predict significant changes in global markets due to emerging technologies and shifting consumer behaviors in the digital economy.",
-                "The latest research in renewable energy shows promising advances in solar panel efficiency and battery storage technology that could revolutionize power generation."
+                "Scientists have discovered a new species of deep-sea creature that can survive in extreme pressure conditions previously thought impossible for complex life forms. This finding expands our understanding of biodiversity and the potential for life in extreme environments both on Earth and potentially on other planets in our solar system.",
+                "Economic analysts predict significant changes in global markets due to emerging technologies and shifting consumer behaviors in the digital economy. The rise of digital currencies, remote work, and sustainable business practices are reshaping traditional economic models and creating new opportunities for growth and innovation.",
+                "The latest research in renewable energy shows promising advances in solar panel efficiency and battery storage technology that could revolutionize power generation. These improvements could significantly reduce the cost of clean energy and accelerate the transition away from fossil fuels in the coming decades."
             ]
         };
 
@@ -241,26 +241,8 @@ class TypingSpeedTesterPro {
     loadRandomText() {
         const texts = this.difficulty === 'programming' ? this.programmingTexts : this.textSources[this.category] || this.textSources.general;
         
-        // For programming mode, use a single random text
-        if (this.difficulty === 'programming') {
-            this.currentText = texts[Math.floor(Math.random() * texts.length)];
-        } else {
-            // For other modes, combine 2-3 sentences with proper spacing
-            const numTexts = Math.min(3, Math.ceil(600 / texts[0].length));
-            let combinedText = '';
-            
-            for (let i = 0; i < numTexts; i++) {
-                const selectedText = texts[Math.floor(Math.random() * texts.length)];
-                combinedText += selectedText;
-                
-                // Add proper sentence separation
-                if (i < numTexts - 1) {
-                    combinedText += ' ';
-                }
-            }
-            
-            this.currentText = combinedText;
-        }
+        // Always use just ONE random text - no combination to prevent confusion
+        this.currentText = texts[Math.floor(Math.random() * texts.length)];
         
         // Clean up spacing and punctuation
         this.currentText = this.currentText
@@ -269,19 +251,14 @@ class TypingSpeedTesterPro {
             .replace(/\s*,\s*/g, ', ')
             .trim();
         
-        // Apply difficulty modifier
+        // For difficulty levels, just truncate if needed (no complex combining)
         const modifier = this.difficultyLevels[this.difficulty].modifier;
-        if (modifier !== 1.0) {
+        if (modifier < 1.0) {
             const targetLength = Math.floor(this.currentText.length * modifier);
-            if (targetLength < this.currentText.length && targetLength > 200) {
-                const breakPoint = this.currentText.lastIndexOf('. ', targetLength);
-                if (breakPoint > targetLength * 0.7) {
-                    this.currentText = this.currentText.substring(0, breakPoint + 1);
-                } else {
-                    const wordBreak = this.currentText.lastIndexOf(' ', targetLength);
-                    if (wordBreak > 0) {
-                        this.currentText = this.currentText.substring(0, wordBreak);
-                    }
+            if (targetLength > 100) {
+                const wordBreak = this.currentText.lastIndexOf(' ', targetLength);
+                if (wordBreak > 50) {
+                    this.currentText = this.currentText.substring(0, wordBreak) + '.';
                 }
             }
         }
@@ -434,20 +411,14 @@ class TypingSpeedTesterPro {
     }
     
     extendText() {
+        // Only extend if really needed - keep it simple
         const texts = this.difficulty === 'programming' ? this.programmingTexts : this.textSources[this.category] || this.textSources.general;
         let additionalText = texts[Math.floor(Math.random() * texts.length)]
             .replace(/\s+/g, ' ')
-            .replace(/\s*\.\s*/g, '. ')
-            .replace(/\s*,\s*/g, ', ')
             .trim();
         
-        // Ensure proper spacing between sentences
-        if (this.currentText.endsWith('.') || this.currentText.endsWith('!') || this.currentText.endsWith('?')) {
-            this.currentText += ' ' + additionalText;
-        } else {
-            this.currentText += '. ' + additionalText;
-        }
-        
+        // Add with clear sentence separation
+        this.currentText += ' ' + additionalText;
         this.displayText();
     }
     
