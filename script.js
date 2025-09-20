@@ -43,6 +43,29 @@ class TypingSpeedTesterPro {
             "async function fetchData(id) { try { const response = await fetch(`/api/users/${id}`); return await response.json(); } catch (error) { throw error; } }"
         ];
 
+        // World typing speed records and benchmarks
+        this.worldRecords = [
+            { name: "Barbara Blackburn", wpm: 212, description: "Fastest typing speed (Guinness World Record)", year: "2005" },
+            { name: "Stella Pajunas", wpm: 216, description: "Peak speed record on IBM electric typewriter", year: "1946" },
+            { name: "Sean Wrona", wpm: 200, description: "Modern competitive typing champion", year: "2020s" },
+            { name: "Anthony Ermolin", wpm: 190, description: "Online typing competition record", year: "2019" },
+            { name: "Joshua Hu", wpm: 185, description: "Teen typing prodigy", year: "2021" }
+        ];
+
+        // Typing speed benchmarks for comparison
+        this.speedBenchmarks = [
+            { level: "Beginner", min: 0, max: 25, description: "Just starting out", icon: "🐌" },
+            { level: "Below Average", min: 26, max: 35, description: "Keep practicing!", icon: "🚶" },
+            { level: "Average", min: 36, max: 45, description: "Decent typing speed", icon: "🚴" },
+            { level: "Above Average", min: 46, max: 55, description: "Good job!", icon: "🏃" },
+            { level: "Fast", min: 56, max: 70, description: "Really fast typer", icon: "🏃‍♂️" },
+            { level: "Very Fast", min: 71, max: 85, description: "Excellent speed!", icon: "🚗" },
+            { level: "Lightning", min: 86, max: 100, description: "Amazing speed!", icon: "⚡" },
+            { level: "Superhuman", min: 101, max: 120, description: "Professional level", icon: "🚀" },
+            { level: "Elite", min: 121, max: 150, description: "Elite competitive level", icon: "👑" },
+            { level: "World Class", min: 151, max: 999, description: "World championship level", icon: "🏆" }
+        ];
+
         // Initialize state
         this.currentText = '';
         this.currentIndex = 0;
@@ -492,6 +515,8 @@ class TypingSpeedTesterPro {
         
         this.checkAchievements(finalWPM, finalAccuracy);
         
+        this.showSpeedComparison(finalWPM);
+        
         this.saveProgress(finalWPM, finalAccuracy);
         
         this.resultsPanel.classList.remove('hidden');
@@ -568,6 +593,88 @@ class TypingSpeedTesterPro {
         
         const tip = tips[key.toLowerCase()] || `Practice the ${key.toUpperCase()} key more. Focus on proper finger placement.`;
         alert(`💡 Tip for "${key === ' ' ? 'SPACE' : key.toUpperCase()}" key:\n\n${tip}\n\nErrors: ${errorCount}`);
+    }
+    
+    getSpeedComparison(wpm) {
+        // Find user's current benchmark level
+        const userLevel = this.speedBenchmarks.find(level => wpm >= level.min && wpm <= level.max);
+        
+        // Find how close they are to world records
+        const worldRecordComparisons = this.worldRecords.map(record => ({
+            ...record,
+            difference: record.wpm - wpm,
+            percentage: Math.round((wpm / record.wpm) * 100)
+        }));
+        
+        // Calculate progress to next level
+        const nextLevel = this.speedBenchmarks.find(level => level.min > wpm);
+        let progress = 0;
+        let progressText = '';
+        
+        if (nextLevel && userLevel) {
+            const currentLevelRange = userLevel.max - userLevel.min;
+            const currentProgress = wpm - userLevel.min;
+            progress = Math.round((currentProgress / currentLevelRange) * 100);
+            progressText = `${nextLevel.min - wpm} WPM to reach ${nextLevel.level}`;
+        } else if (nextLevel && !userLevel) {
+            // User is below first level
+            progress = Math.round((wpm / nextLevel.min) * 100);
+            progressText = `${nextLevel.min - wpm} WPM to reach ${nextLevel.level}`;
+        }
+        
+        return {
+            userLevel: userLevel || { level: 'Below Beginner', color: 'level-beginner', min: 0, max: 24, description: 'Just starting out' },
+            worldRecords: worldRecordComparisons,
+            nextLevel,
+            progress,
+            progressText
+        };
+    }
+    
+    showSpeedComparison(wpm) {
+        const comparison = this.getSpeedComparison(wpm);
+        const speedComparisonDiv = document.getElementById('speedComparison');
+        
+        if (!speedComparisonDiv) return;
+        
+        let html = `
+            <h4>🏆 World Record Comparisons</h4>
+            <div class="speed-level">
+                <h5>Your Typing Level</h5>
+                <span class="level-badge level-${comparison.userLevel.level.toLowerCase().replace(/\s+/g, '-')}">${comparison.userLevel.level}</span>
+                <p style="margin-top: 10px; color: #1e40af; font-weight: 600;">${comparison.userLevel.description}</p>
+                ${comparison.progressText ? `<div class="progress-info" style="margin-top: 15px; font-size: 1rem; color: #059669; font-weight: 600;">${comparison.progressText}</div>` : ''}
+            </div>
+            
+            <div class="world-records">
+                <h5>🥇 Famous Speed Records</h5>
+                <div class="records-list">
+                    <div class="record-item user-comparison">
+                        <span class="record-name">Your Speed</span>
+                        <span class="record-speed">${wpm} WPM</span>
+                    </div>
+        `;
+        
+        comparison.worldRecords.slice(0, 3).forEach(record => {
+            html += `
+                <div class="record-item">
+                    <span class="record-name">${record.name}</span>
+                    <span class="record-speed">${record.wpm} WPM</span>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+        
+        if (comparison.nextLevel) {
+            html += `
+                <div class="comparison-note">
+                    🎯 Next Goal: Reach ${comparison.nextLevel.min} WPM to become "${comparison.nextLevel.level}"
+                </div>
+            `;
+        }
+        
+        speedComparisonDiv.innerHTML = html;
     }
     
     addExperience(wpm, accuracy) {
