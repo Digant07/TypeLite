@@ -60,6 +60,7 @@ class TypingSpeedTesterPro {
         this.bestStreak = 0;
         this.userLevel = 1;
         this.experience = 0;
+        this.isComposing = false; // For mobile input composition handling
         
         // Settings
         this.difficulty = 'medium';
@@ -135,6 +136,29 @@ class TypingSpeedTesterPro {
         
         this.textInput.addEventListener('input', (e) => this.handleTyping(e));
         this.textInput.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        
+        // Mobile-specific event handlers
+        this.textInput.addEventListener('compositionstart', (e) => {
+            this.isComposing = true;
+        });
+        
+        this.textInput.addEventListener('compositionend', (e) => {
+            this.isComposing = false;
+            this.handleTyping(e);
+        });
+        
+        // Prevent paste and other unwanted actions
+        this.textInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+        });
+        
+        this.textInput.addEventListener('cut', (e) => {
+            e.preventDefault();
+        });
+        
+        this.textInput.addEventListener('copy', (e) => {
+            e.preventDefault();
+        });
         
         this.difficultySelect.addEventListener('change', (e) => {
             this.difficulty = e.target.value;
@@ -313,23 +337,39 @@ class TypingSpeedTesterPro {
     }
     
     handleTyping(e) {
-        if (!this.isTyping) return;
+        if (!this.isTyping || this.isComposing) return;
         
-        const typedText = e.target.value;
+        let typedText = e.target.value;
         const typedLength = typedText.length;
+        
+        // Prevent autocorrect/autocomplete interference
+        if (e.inputType === 'insertReplacementText' || e.inputType === 'insertFromComposition') {
+            return;
+        }
+        
+        // Clean input on mobile devices to prevent weird characters
+        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Remove any non-printable characters or unusual Unicode
+            typedText = typedText.replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '');
+            if (typedText !== e.target.value) {
+                e.target.value = typedText;
+            }
+        }
         
         if (typedLength > this.currentText.length - 50) {
             this.extendText();
         }
         
-        this.totalChars = typedLength;
+        this.totalChars = typedText.length;
         this.correctChars = 0;
         this.errors = 0;
         
         this.clearHighlighting();
         
-        for (let i = 0; i < typedLength; i++) {
+        for (let i = 0; i < this.totalChars; i++) {
             const charElement = document.getElementById(`char-${i}`);
+            if (!charElement) continue;
+            
             const typedChar = typedText[i];
             const correctChar = this.currentText[i];
             
@@ -360,7 +400,7 @@ class TypingSpeedTesterPro {
             this.bestStreak = this.currentStreak;
         }
         
-        this.currentIndex = typedLength;
+        this.currentIndex = this.totalChars;
         this.highlightCurrentChar();
         
         this.updateStats();
