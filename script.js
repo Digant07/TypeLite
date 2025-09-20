@@ -637,11 +637,17 @@ class TypingSpeedTesterPro {
         
         if (!speedComparisonDiv) return;
         
+        // Convert level name to CSS class name
+        const levelClass = comparison.userLevel.level
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z-]/g, '');
+        
         let html = `
             <h4>🏆 World Record Comparisons</h4>
             <div class="speed-level">
                 <h5>Your Typing Level</h5>
-                <span class="level-badge level-${comparison.userLevel.level.toLowerCase().replace(/\s+/g, '-')}">${comparison.userLevel.level}</span>
+                <span class="level-badge level-${levelClass}">${comparison.userLevel.level}</span>
                 <p style="margin-top: 10px; color: #1e40af; font-weight: 600;">${comparison.userLevel.description}</p>
                 ${comparison.progressText ? `<div class="progress-info" style="margin-top: 15px; font-size: 1rem; color: #059669; font-weight: 600;">${comparison.progressText}</div>` : ''}
             </div>
