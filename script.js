@@ -22,9 +22,9 @@ class TypingSpeedTesterPro {
                 "Innovation distinguishes between a leader and a follower. Think different and challenge the status quo in everything you do."
             ],
             news: [
-                "Scientists have discovered a new species of deep-sea creature that can survive in extreme pressure conditions previously thought impossible.",
-                "The latest research in renewable energy shows promising advances in solar panel efficiency and battery storage technology.",
-                "Economic analysts predict significant changes in global markets due to emerging technologies and shifting consumer behaviors."
+                "Scientists have discovered a new species of deep-sea creature that can survive in extreme pressure conditions previously thought impossible for complex life forms.",
+                "Economic analysts predict significant changes in global markets due to emerging technologies and shifting consumer behaviors in the digital economy.",
+                "The latest research in renewable energy shows promising advances in solar panel efficiency and battery storage technology that could revolutionize power generation."
             ]
         };
 
@@ -240,22 +240,49 @@ class TypingSpeedTesterPro {
     
     loadRandomText() {
         const texts = this.difficulty === 'programming' ? this.programmingTexts : this.textSources[this.category] || this.textSources.general;
-        const numTexts = Math.ceil(800 / texts[0].length);
         
-        let combinedText = '';
-        for (let i = 0; i < numTexts; i++) {
-            combinedText += texts[Math.floor(Math.random() * texts.length)] + (i < numTexts - 1 ? ' ' : '');
+        // For programming mode, use a single random text
+        if (this.difficulty === 'programming') {
+            this.currentText = texts[Math.floor(Math.random() * texts.length)];
+        } else {
+            // For other modes, combine 2-3 sentences with proper spacing
+            const numTexts = Math.min(3, Math.ceil(600 / texts[0].length));
+            let combinedText = '';
+            
+            for (let i = 0; i < numTexts; i++) {
+                const selectedText = texts[Math.floor(Math.random() * texts.length)];
+                combinedText += selectedText;
+                
+                // Add proper sentence separation
+                if (i < numTexts - 1) {
+                    combinedText += ' ';
+                }
+            }
+            
+            this.currentText = combinedText;
         }
         
-        this.currentText = combinedText.replace(/\s+/g, ' ').replace(/\s*\.\s*/g, '. ').replace(/\s*,\s*/g, ', ').trim();
+        // Clean up spacing and punctuation
+        this.currentText = this.currentText
+            .replace(/\s+/g, ' ')
+            .replace(/\s*\.\s*/g, '. ')
+            .replace(/\s*,\s*/g, ', ')
+            .trim();
         
         // Apply difficulty modifier
         const modifier = this.difficultyLevels[this.difficulty].modifier;
         if (modifier !== 1.0) {
             const targetLength = Math.floor(this.currentText.length * modifier);
-            if (targetLength < this.currentText.length && targetLength > 400) {
-                const breakPoint = this.currentText.lastIndexOf('. ', targetLength) || this.currentText.lastIndexOf(' ', targetLength);
-                if (breakPoint > targetLength * 0.8) this.currentText = this.currentText.substring(0, breakPoint + 1);
+            if (targetLength < this.currentText.length && targetLength > 200) {
+                const breakPoint = this.currentText.lastIndexOf('. ', targetLength);
+                if (breakPoint > targetLength * 0.7) {
+                    this.currentText = this.currentText.substring(0, breakPoint + 1);
+                } else {
+                    const wordBreak = this.currentText.lastIndexOf(' ', targetLength);
+                    if (wordBreak > 0) {
+                        this.currentText = this.currentText.substring(0, wordBreak);
+                    }
+                }
             }
         }
         
@@ -408,13 +435,19 @@ class TypingSpeedTesterPro {
     
     extendText() {
         const texts = this.difficulty === 'programming' ? this.programmingTexts : this.textSources[this.category] || this.textSources.general;
-        const additionalText = texts[Math.floor(Math.random() * texts.length)]
+        let additionalText = texts[Math.floor(Math.random() * texts.length)]
             .replace(/\s+/g, ' ')
             .replace(/\s*\.\s*/g, '. ')
             .replace(/\s*,\s*/g, ', ')
             .trim();
         
-        this.currentText += ' ' + additionalText;
+        // Ensure proper spacing between sentences
+        if (this.currentText.endsWith('.') || this.currentText.endsWith('!') || this.currentText.endsWith('?')) {
+            this.currentText += ' ' + additionalText;
+        } else {
+            this.currentText += '. ' + additionalText;
+        }
+        
         this.displayText();
     }
     
