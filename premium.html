@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to Premium - Typing Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .premium-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .premium-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .premium-header h1 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .premium-features {
+            background: var(--muted);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .feature-list li:before {
+            content: "âœ“";
+            color: #22c55e;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .payment-form {
+            background: var(--muted);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--fg);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--fg);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+        }
+
+        .payment-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .payment-btn:hover {
+            background: #9333ea;
+            transform: translateY(-2px);
+        }
+
+        .price-tag {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            display: none;
+            background: #22c55e;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="premium-container">
+        <a href="index.html" class="back-link">â† Back to Typing Test</a>
+        
+        
+        <div class="login-required" id="loginRequired" style="display: none;">
+            <div class="premium-header">
+                <h1>ðŸ” Login Required</h1>
+                <p>Please log in to upgrade to Premium</p>
+            </div>
+            <div style="text-align: center; margin: 2rem 0;">
+                <a href="login.html" class="payment-btn" style="display: inline-block; text-decoration: none; margin-right: 1rem;">Login</a>
+                <a href="register.html" class="payment-btn" style="display: inline-block; text-decoration: none; background: var(--muted); color: var(--fg);">Register</a>
+            </div>
+        </div>
+
+        
+        <div class="already-premium" id="alreadyPremium" style="display: none;">
+            <div class="premium-header">
+                <h1>ðŸŒŸ You're Already Premium!</h1>
+                <p>You have full access to all premium features</p>
+            </div>
+            <div style="text-align: center; margin: 2rem 0;">
+                <a href="index.html" class="payment-btn" style="display: inline-block; text-decoration: none;">Back to Typing Test</a>
+            </div>
+        </div>
+
+        
+        <div class="premium-upgrade" id="premiumUpgrade">
+            <div class="premium-header">
+                <h1>ðŸŒŸ Upgrade to Premium</h1>
+                <p>Unlock expert features and enhance your typing experience!</p>
+                <div class="user-info" id="userInfo" style="font-size: 0.9rem; color: var(--subtle); margin-top: 0.5rem;"></div>
+            </div>
+
+        <div class="premium-features">
+            <h3>Premium Features Include:</h3>
+            <ul class="feature-list">
+                <li>ðŸŽµ Background Music with 4 Premium Tracks</li>
+                <li>ðŸš€ Expert Difficulty Level</li>
+                <li>ðŸ”¥ Ad-Free Experience</li>
+            </ul>
+        </div>
+
+        <div class="price-tag">
+            Only $9.99/month
+        </div>
+
+        <form class="payment-form" id="paymentForm">
+            <h3>Payment Information</h3>
+            
+            <div class="form-group">
+                <label for="cardName">Cardholder Name</label>
+                <input type="text" id="cardName" required placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="expiryDate">Expiry Date</label>
+                    <input type="text" id="expiryDate" required placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" required placeholder="123" maxlength="4">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="john@example.com">
+            </div>
+
+            <button type="submit" class="payment-btn">
+                Upgrade to Premium - $9.99/month
+            </button>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication status on page load
+        async function checkAuth() {
+            try {
+                const response = await fetch('php/me.php');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    currentUser = data;
+                    document.getElementById('userInfo').textContent = `Logged in as: ${data.username}`;
+                    
+                    // Check if user is already premium
+                    const premiumResponse = await fetch('php/premium.php');
+                    const premiumData = await premiumResponse.json();
+                    
+                    if (premiumData.success && premiumData.is_premium) {
+                        showAlreadyPremium();
+                    } else {
+                        showPremiumUpgrade();
+                    }
+                } else {
+                    showLoginRequired();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                showLoginRequired();
+            }
+        }
+
+        function showLoginRequired() {
+            document.getElementById('loginRequired').style.display = 'block';
+            document.getElementById('alreadyPremium').style.display = 'none';
+            document.getElementById('premiumUpgrade').style.display = 'none';
+        }
+
+        function showAlreadyPremium() {
+            document.getElementById('loginRequired').style.display = 'none';
+            document.getElementById('alreadyPremium').style.display = 'block';
+            document.getElementById('premiumUpgrade').style.display = 'none';
+        }
+
+        function showPremiumUpgrade() {
+            document.getElementById('loginRequired').style.display = 'none';
+            document.getElementById('alreadyPremium').style.display = 'none';
+            document.getElementById('premiumUpgrade').style.display = 'block';
+        }
+
+        // Handle premium upgrade form submission
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please log in to upgrade to premium');
+                return;
+            }
+            
+            // Basic validation
+            const cardName = document.getElementById('cardName').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+            const email = document.getElementById('email').value;
+
+            if (!cardName || !cardNumber || !expiryDate || !cvv || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Simple card number validation (any 16 digits)
+            const cardNumberDigits = cardNumber.replace(/\s/g, '');
+            if (cardNumberDigits.length < 15) {
+                alert('Please enter a valid card number');
+                return;
+            }
+
+            try {
+                // Activate premium for the user
+                const response = await fetch('php/premium.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_confirmed: true,
+                        card_name: cardName,
+                        email: email
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'block';
+                    
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    alert('Payment failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment processing failed. Please try again.');
+            }
+        });
+
+        // Format card number input
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry date input
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Only allow numbers for CVV
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Initialize page
+        checkAuth();
+    </script>
+</body>
+</html>
