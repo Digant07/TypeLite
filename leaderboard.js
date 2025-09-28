@@ -1,8 +1,9 @@
 ﻿(() => {
   'use strict';
   const tbody = document.getElementById('lbBody');
-  const status = document.getElementById('lbStatus');
-  const filtersWrap = document.getElementById('lbFilters');
+  const status = document.getElementById('lbStatus')    if(!iso) return '—';
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return '—';  const filtersWrap = document.getElementById('lbFilters');
   const titleEl = document.getElementById('lbTitle');
   const subEl = document.getElementById('lbSub');
   const refreshBtn = document.getElementById('refreshLeaderboard');

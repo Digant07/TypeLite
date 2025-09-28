@@ -1,7 +1,9 @@
 ﻿(() => {
   'use strict';
 
-  const wordsEl = document.getElementById('words');
+  const wordsEl = document.getElemen    'Mistakes are feedback—review them, adjust, and continue.',
+    'Balanced posture, relaxed wrists, and clear breathing improve endurance.',
+    'Progress feels invisible—until suddenly, everything is faster.',Id('words');
   const cursorEl = document.getElementById('cursor');
   const testArea = document.getElementById('testArea');
   const hiddenInput = document.getElementById('hiddenInput');

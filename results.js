@@ -1,4 +1,4 @@
-﻿(() => {
+﻿(() =    els('rWpm').textContent='—'; {
   'use strict';
   const data = (()=>{ try { return JSON.parse(sessionStorage.getItem('lastResult')||'null'); } catch(e){ return null; }})();
   const els = id => document.getElementById(id);
