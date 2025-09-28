@@ -1,0 +1,74 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login • TypeLite</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand" onclick="window.location.href='index.html'" style="cursor: pointer;">
+        <span class="brand-logo">⌨</span>
+        <span class="brand-name">TypeLite</span>
+      </div>
+      
+      <div class="navbar-actions" id="navbarActions">
+        <button class="action-btn" id="themeToggle" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="auth-shell">
+    <section class="auth-card">
+      <h2>Welcome back</h2>
+      <p class="auth-sub">Sign in to track your progress.</p>
+      <div id="error" class="banner"></div>
+      <form id="loginForm" class="form" autocomplete="on" style="display:flex;flex-direction:column;gap:12px;">
+        <label class="field">
+          <span>Username</span>
+          <input id="username" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" required autofocus>
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="primary" type="submit">Sign in</button>
+        <p class="hint">No account? <a href="register.html">Create one</a></p>
+      </form>
+    </section>
+  </main>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme==='light'){ document.documentElement.classList.add('light'); }
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      const isLight = document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+    const f = document.getElementById('loginForm');
+    const error = document.getElementById('error');
+    f.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      error.classList.remove('show');
+      error.textContent = '';
+      const payload = new URLSearchParams();
+      payload.set('username', f.username.value.trim());
+      payload.set('password', f.password.value);
+      fetch('php/login.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:payload})
+        .then(r=>r.json())
+        .then(d=>{
+          if(d.success){ location.href = 'index.html'; }
+          else { error.textContent = d.error || 'Login failed'; error.classList.add('show'); }
+        })
+        .catch(()=> { error.textContent = 'Network error'; error.classList.add('show'); });
+    });
+  </script>
+  <script src="nav.js" defer></script>
+</body>
+</html>
+

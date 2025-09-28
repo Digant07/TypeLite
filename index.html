@@ -1,0 +1,182 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Typing Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <span class="brand-logo">⌨</span>
+        <span class="brand-name">TypeLite</span>
+      </div>
+      
+      <nav class="navbar-nav" id="navbarNav">
+        <a href="index.html" class="nav-link active" id="navTest">Home</a>
+        <a href="leaderboard.html" class="nav-link" id="navLeaderboard">Leaderboard</a>
+      </nav>
+      
+      <div class="navbar-actions" id="navbarActions">
+        <button class="action-btn" id="themeToggle" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+        <div class="user-menu" id="authArea">
+          <a href="login.html" class="login-btn" id="loginLink">login</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    <main class="container">
+        <section class="controls toolbar" aria-label="Test controls">
+            <div class="left-controls">
+                <div class="group">
+                    <label>Mode</label>
+                    <div class="segmented" role="tablist" aria-label="Test mode">
+                        <button class="seg-btn active" data-mode="time" role="tab" aria-selected="true">Time</button>
+                        <button class="seg-btn" data-mode="words" role="tab" aria-selected="false">Words</button>
+                    </div>
+                </div>
+                <div class="group">
+                    <label>Difficulty</label>
+                    <div class="segmented" role="tablist" aria-label="Difficulty level" id="difficultyTabs">
+                        <button class="seg-btn active" data-difficulty="beginner" role="tab" aria-selected="true">Beginner</button>
+                        <button class="seg-btn" data-difficulty="intermediate" role="tab" aria-selected="false">Standard</button>
+                        <button class="seg-btn premium-locked" data-difficulty="advanced" role="tab" aria-selected="false" id="advancedBtn">
+                            Expert
+                            <span class="premium-badge" id="advancedPremiumBadge" style="display: none;">PRO</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="group" id="timeOptions">
+                    <label>Duration</label>
+                    <div class="segmented">
+                        <button class="seg-btn active" data-seconds="60">60s</button>
+                        <button class="seg-btn" data-seconds="30">30s</button>
+                        <button class="seg-btn" data-seconds="120">120s</button>
+                    </div>
+                </div>
+                <div class="group hidden" id="wordOptions">
+                    <label>Word count</label>
+                    <div class="segmented">
+                        <button class="seg-btn active" data-words="25">25</button>
+                        <button class="seg-btn" data-words="50">50</button>
+                        <button class="seg-btn" data-words="100">100</button>
+                    </div>
+                </div>
+            </div>
+            <div class="right-controls">
+                <button id="restartBtn" class="primary" title="Restart test">Restart ↺</button>
+                <!-- Compact Music Controls -->
+                <div class="music-compact" id="musicCompact">
+                    <button class="music-btn" id="musicBtn" title="Music Controls">
+                        🎵
+                        <span class="premium-badge" id="musicPremiumBadge" style="display: none;">PRO</span>
+                    </button>
+                    <div class="music-dropdown" id="musicDropdown" style="display: none;">
+                        <div class="premium-prompt" id="musicPremiumPrompt" style="display: none;">
+                            <p>🌟 Premium Feature</p>
+                            <p>Unlock background music and enhance your typing experience!</p>
+                            <button class="upgrade-btn" onclick="window.location.href='premium.html'">Upgrade to Premium</button>
+                        </div>
+                        <div class="music-tracks" id="musicTracksContainer">
+                            <label><input type="radio" name="musicTrack" value="none" checked> Off</label>
+                            <label><input type="radio" name="musicTrack" value="ambient-focus.mp3"> Ambient</label>
+                            <label><input type="radio" name="musicTrack" value="electronic-drive.mp3"> Electronic</label>
+                            <label><input type="radio" name="musicTrack" value="lofi-chill.mp3"> Lo-Fi</label>
+                            <label><input type="radio" name="musicTrack" value="upbeat-energy.mp3"> Upbeat</label>
+                            <label class="custom-upload-label">
+                                <input type="radio" name="musicTrack" value="custom"> Custom
+                                <input type="file" id="customMusicFile" accept="audio/*" style="display: none;">
+                            </label>
+                        </div>
+                        <div class="music-controls-compact">
+                            <button id="playBtn" title="Play">▶</button>
+                            <button id="pauseBtn" title="Pause" style="display: none;">⏸</button>
+                            <button id="stopBtn" title="Stop">⏹</button>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="50" title="Volume">
+                        </div>
+                        <div class="music-status-compact">
+                            <span id="currentTrackName">No music</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="test" aria-label="Typing test" tabindex="0" id="testArea">
+            <div id="words" class="words" aria-live="polite"></div>
+            <div id="cursor" class="cursor" aria-hidden="true"></div>
+            <input id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </section>
+
+        <section class="stats" aria-label="Statistics">
+            <div class="stat"><span class="label">WPM</span><span id="wpm" class="value">0</span></div>
+            <div class="stat"><span class="label">Accuracy</span><span id="accuracy" class="value">100%</span></div>
+            <div class="stat"><span class="label">Time</span><span id="time" class="value">0s</span></div>
+        </section>
+
+        <!-- Leaderboard moved to standalone page: leaderboard.html -->
+    </main>
+
+    <dialog id="helpDialog" aria-label="Help and shortcuts">
+        <h2>How it works</h2>
+        <p>Choose a mode (time or word count) and difficulty. Start typing anywhere in the test box. Your stats update live. Press Restart to begin a fresh run.</p>
+        <ul class="help-list">
+            <li><strong>Tab</strong> moves focus out (everything else keeps focus in test)</li>
+            <li><strong>Backspace</strong> corrects previous characters</li>
+            <li><strong>Words mode</strong> ends automatically at target words</li>
+            <li><strong>Time mode</strong> ends when the timer reaches zero</li>
+        </ul>
+        <div class="dialog-actions">
+            <button class="primary" id="helpClose">Close</button>
+        </div>
+    </dialog>
+
+    <!-- Result summary dialog -->
+    <dialog id="resultDialog" aria-label="Test result summary">
+        <h2 class="result-title">Result</h2>
+        <div class="result-summary">
+            <div class="r-item"><span class="r-label">WPM</span><span class="r-value" id="resWpm">0</span></div>
+            <div class="r-item"><span class="r-label">Accuracy</span><span class="r-value" id="resAcc">0%</span></div>
+            <div class="r-item"><span class="r-label">Time</span><span class="r-value" id="resTime">0s</span></div>
+        </div>
+        <div class="result-actions">
+            <button id="copyResult" class="mini-btn" type="button">Copy</button>
+            <a href="leaderboard.html" class="mini-btn" id="viewLeaderboard">Leaderboard</a>
+            <button id="closeResult" class="primary" type="button">Close</button>
+        </div>
+    </dialog>
+
+    <script src="nav.js" defer></script>
+    <script src="app.js" defer></script>
+    <noscript>Please enable JavaScript to use this typing test.</noscript>
+
+    <!-- Voiceflow AI Assistant -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '68d8f03c526e2203edaf7968' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>
+

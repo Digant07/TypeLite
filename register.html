@@ -1,0 +1,117 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register • TypeLite</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>.helper{color:var(--subtle);font-size:12px}</style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand" onclick="window.location.href='index.html'" style="cursor: pointer;">
+        <span class="brand-logo">⌨</span>
+        <span class="brand-name">TypeLite</span>
+      </div>
+      
+      <div class="navbar-actions" id="navbarActions">
+        <button class="action-btn" id="themeToggle" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="auth-shell">
+    <section class="auth-card">
+      <h2>Create your account</h2>
+      <p class="auth-sub">It takes less than a minute.</p>
+      <div id="error" class="banner"></div>
+      <form id="registerForm" class="form" autocomplete="on" style="display:flex;flex-direction:column;gap:12px;">
+        <label class="field">
+          <span>Username</span>
+          <input id="username" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" minlength="3" required>
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required>
+        </label>
+        <label class="field">
+          <span>Verify email</span>
+          <input id="email2" name="email2" type="email" autocomplete="email" inputmode="email" required>
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+          <span class="hint">Use 6+ chars. Mix letters and numbers.</span>
+        </label>
+        <label class="field">
+          <span>Verify password</span>
+          <input id="password2" name="password2" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <div class="meter"><div id="pwMeter"></div></div>
+        <button class="primary" type="submit">Sign up</button>
+        <p class="hint">Already have an account? <a href="login.html">Sign in</a></p>
+      </form>
+    </section>
+  </main>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme==='light'){ document.documentElement.classList.add('light'); }
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      const isLight = document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+    const f = document.getElementById('registerForm');
+    const error = document.getElementById('error');
+    const meter = document.getElementById('pwMeter');
+    function scorePassword(p){
+      let s = 0;
+      if(!p) return 0;
+      if(p.length >= 6) s += 20;
+      if(/[A-Z]/.test(p)) s += 20;
+      if(/[a-z]/.test(p)) s += 20;
+      if(/[0-9]/.test(p)) s += 20;
+      if(/[^A-Za-z0-9]/.test(p)) s += 20;
+      return Math.min(100, s);
+    }
+    f.password.addEventListener('input',()=>{
+      meter.style.width = scorePassword(f.password.value) + '%';
+    });
+    f.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      error.classList.remove('show');
+      error.textContent = '';
+      const uname = f.username.value.trim();
+      const email = f.email.value.trim();
+      const email2 = f.email2.value.trim();
+      if(uname.length < 3){ error.textContent = 'Username must be at least 3 characters.'; error.classList.add('show'); return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ error.textContent = 'Enter a valid email address.'; error.classList.add('show'); return; }
+      if(email !== email2){ error.textContent = 'Emails do not match.'; error.classList.add('show'); return; }
+      if(f.password.value.length < 6){ error.textContent = 'Password must be at least 6 characters.'; error.classList.add('show'); return; }
+      if(f.password.value !== f.password2.value){ error.textContent = 'Passwords do not match.'; error.classList.add('show'); return; }
+      const payload = new URLSearchParams();
+      payload.set('username', uname);
+      payload.set('email', email);
+      payload.set('password', f.password.value);
+      fetch('php/register.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:payload})
+        .then(async r => {
+          let data = null;
+          try { data = await r.clone().json(); }
+          catch { const t = await r.text(); throw new Error(t || r.statusText || 'Request failed'); }
+          if(!r.ok || (data && data.success === false)){
+            throw new Error((data && data.error) || r.statusText || 'Registration failed');
+          }
+          return data;
+        })
+        .then(()=>{ location.href = 'index.html'; })
+        .catch((err)=> { error.textContent = err.message || 'Network error'; error.classList.add('show'); });
+    });
+  </script>
+  <script src="nav.js" defer></script>
+</body>
+</html>
+

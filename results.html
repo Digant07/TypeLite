@@ -1,0 +1,138 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Result • TypeLite</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="results-body">
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand" onclick="window.location.href='index.html'" style="cursor: pointer;"><span class="brand-logo">⌨</span><span class="brand-name">TypeLite</span></div>
+      
+      <nav class="navbar-nav" id="navbarNav">
+        <a href="index.html" class="nav-link" id="navTest">Home</a>
+        <a href="leaderboard.html" class="nav-link" id="navLeaderboard">Leaderboard</a>
+      </nav>
+      <div class="navbar-actions" id="navbarActions">
+        <button class="action-btn" id="themeToggle" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+        <div class="user-menu" id="authArea"><a href="login.html" class="login-btn" id="loginLink">login</a></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="results-wrapper">
+    <section class="results-hero">
+      <div class="primary-metric">
+        <div class="pm-label">WPM</div>
+        <div class="pm-value" id="rWpm">0</div>
+        <div class="pm-sub" id="rAccuracy">Accuracy 0%</div>
+      </div>
+      <div class="secondary-metrics" id="secondaryMetrics">
+        <div class="sec-card"><span class="sec-label">Raw WPM</span><span class="sec-value" id="rRawWpm">0</span></div>
+        <div class="sec-card"><span class="sec-label">Consistency</span><span class="sec-value" id="rConsistency">0%</span></div>
+        <div class="sec-card"><span class="sec-label">Errors/sec</span><span class="sec-value" id="rErrorsPerSec">0</span></div>
+        <div class="sec-card"><span class="sec-label">Duration</span><span class="sec-value" id="rDuration">0s</span></div>
+      </div>
+    </section>
+
+    <!-- World Record Comparison Section -->
+    <section class="world-record-comparison panel">
+      <header class="panel-head">
+        <span>🏆 World Record Comparison</span>
+        <small>Based on verified typing speed records</small>
+      </header>
+      <div class="wr-content">
+        <div class="wr-stats">
+          <div class="wr-record">
+            <div class="wr-label">World Record</div>
+            <div class="wr-value" id="worldRecord">216 WPM</div>
+            <div class="wr-holder">Barbara Blackburn</div>
+          </div>
+          <div class="wr-user">
+            <div class="wr-label">Your Speed</div>
+            <div class="wr-value" id="userWpm">0 WPM</div>
+            <div class="wr-percentage" id="wrPercentage">0%</div>
+          </div>
+        </div>
+        <div class="wr-progress">
+          <div class="wr-progress-bar">
+            <div class="wr-progress-fill" id="wrProgressFill" style="width: 0%"></div>
+            <div class="wr-progress-marker" id="wrProgressMarker" style="left: 0%"></div>
+          </div>
+          <div class="wr-gap">
+            <span class="wr-gap-text">Gap to close:</span>
+            <span class="wr-gap-value" id="wrGap">216 WPM</span>
+          </div>
+        </div>
+        <div class="wr-motivation" id="wrMotivation">
+          Keep practicing to reach legendary typing speeds! 🚀
+        </div>
+      </div>
+    </section>
+
+    <section class="results-breakdown panel">
+      <header class="panel-head"><span>Characters Breakdown</span></header>
+      <div class="breakdown-grid">
+        <div class="bd-item ok"><span class="bd-label">Correct</span><span class="bd-value" id="rCorrect"></span></div>
+        <div class="bd-item warn"><span class="bd-label">Incorrect</span><span class="bd-value" id="rIncorrect"></span></div>
+        <div class="bd-item miss"><span class="bd-label">Missed</span><span class="bd-value" id="rMissed"></span></div>
+        <div class="bd-item extra"><span class="bd-label">Extra</span><span class="bd-value" id="rExtra"></span></div>
+      </div>
+    </section>
+
+    <section class="results-info panel">
+      <header class="panel-head"><span>Test Info</span></header>
+      <ul class="info-list" id="rInfoList"></ul>
+    </section>
+
+    <section class="results-chart panel">
+      <header class="panel-head"><span>Performance Over Time</span><div class="chart-legend"><span class="lg wpm">WPM</span><span class="lg err">Errors</span><span class="lg avg">Avg WPM</span></div></header>
+      <canvas id="wpmChart" width="900" height="300" class="chart-canvas"></canvas>
+      <div class="empty-chart" id="emptyChartState">No sample data.</div>
+    </section>
+
+    <section class="results-actions">
+      <button id="retryBtn" class="action-large">↺ Retry Test</button>
+        <button class="action-large ghost" id="homeBtn">Home</button>
+        <button class="action-large ghost" id="historyBtn">History</button>
+        <button id="shareBtn" class="action-large">Share</button>
+    </section>
+  </main>
+
+  <script src="nav.js" defer></script>
+  <script src="results.js" defer></script>
+  <script>
+    document.getElementById('homeBtn')?.addEventListener('click', function(){
+      window.location.href = 'index.html';
+    });
+    document.getElementById('historyBtn')?.addEventListener('click', function(){
+      window.location.href = 'leaderboard.html';
+    });
+  </script>
+
+  <!-- Voiceflow AI Assistant -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '68d8f03c526e2203edaf7968' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>

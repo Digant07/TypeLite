@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile • TypeLite</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <span class="brand-logo">⌨</span>
+                <span class="brand-name">TypeLite</span>
+            </div>
+            
+
+            <div class="navbar-actions" id="navbarActions">
+                <button class="action-btn" id="themeToggle" title="Toggle theme">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="authArea">
+                    <a href="login.html" class="login-btn" id="loginLink">login</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="user-avatar">
+                <div class="avatar-circle" id="userAvatar">DI</div>
+                <button class="edit-btn">✏️</button>
+            </div>
+            <div class="user-info">
+                <h1 class="username" id="userName">Digant2332</h1>
+                <p class="join-date">Joined 26 Sep 2025</p>
+                <div class="user-level">
+                    <span class="level-text">1</span>
+                    <div class="xp-bar">
+                        <div class="xp-progress" style="width: 23%"></div>
+                    </div>
+                    <span class="xp-text">23/100</span>
+                </div>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Tests Completed</div>
+                    <div class="stat-value" id="testsCompleted">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Typing Time</div>
+                    <div class="stat-value" id="timeTyping">00:00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Cards -->
+        <div class="performance-section">
+            <div class="perf-group">
+                <h3 class="perf-heading">Time-based Tests</h3>
+                <div class="time-tests">
+                    <div class="perf-row">
+                        <span class="duration">15 seconds</span>
+                        <span class="wpm" id="wmp15">-</span>
+                        <span class="accuracy" id="acc15">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">30 seconds</span>
+                        <span class="wpm" id="wpm30">-</span>
+                        <span class="accuracy" id="acc30">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">60 seconds</span>
+                        <span class="wpm" id="wpm60">-</span>
+                        <span class="accuracy" id="acc60">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">120 seconds</span>
+                        <span class="wpm" id="wpm120">-</span>
+                        <span class="accuracy" id="acc120">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="perf-group">
+                <h3 class="perf-heading">Word-based Tests</h3>
+                <div class="word-tests">
+                    <div class="perf-row">
+                        <span class="duration">10 words</span>
+                        <span class="wpm" id="wpmw10">-</span>
+                        <span class="accuracy" id="accw10">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">25 words</span>
+                        <span class="wpm" id="wpmw25">-</span>
+                        <span class="accuracy" id="accw25">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">50 words</span>
+                        <span class="wpm" id="wpmw50">-</span>
+                        <span class="accuracy" id="accw50">-</span>
+                    </div>
+                    <div class="perf-row">
+                        <span class="duration">100 words</span>
+                        <span class="wpm" id="wpmw100">-</span>
+                        <span class="accuracy" id="accw100">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Management Section -->
+        <div class="premium-management" id="premiumManagement" style="display: none;">
+            <h2 class="section-title">Premium Subscription</h2>
+            <div class="premium-info">
+                <div class="premium-status-card">
+                    <div class="premium-header">
+                        <span class="premium-crown">👑</span>
+                        <div>
+                            <h3>Premium Active</h3>
+                            <p class="activation-date" id="activationDate">Activated on: -</p>
+                        </div>
+                    </div>
+                    <div class="premium-features">
+                        <h4>Premium Features:</h4>
+                        <ul>
+                            <li>🎵 Background Music</li>
+                            <li>🚀 Expert Difficulty Level</li>
+                            <li>🔥 Ad-Free Experience</li>
+                        </ul>
+                    </div>
+                    <div class="premium-actions">
+                        <button class="cancel-premium-btn" id="cancelPremiumBtn">Cancel Subscription</button>
+                        <p class="cancel-warning">You'll lose access to all premium features immediately</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="nav.js"></script>
+    <script>
+        // Load user profile data
+        async function loadProfile() {
+            try {
+                const response = await fetch('php/user_stats.php');
+                const data = await response.json();
+                
+                if (data.authenticated && data.stats) {
+                    document.getElementById('userName').textContent = data.username;
+                    document.getElementById('userAvatar').textContent = data.username.slice(0,2).toUpperCase();
+
+                    document.getElementById('testsCompleted').textContent = data.stats.tests_taken || 0;
+                    
+                    // Format typing time from seconds to HH:MM:SS
+                    const totalSeconds = data.stats.total_typing_time || 0;
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = totalSeconds % 60;
+                    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    document.getElementById('timeTyping').textContent = formattedTime;
+                    
+                    // Load detailed performance data
+                    loadPerformanceData();
+                }
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+            }
+        }
+
+        async function loadPerformanceData() {
+            try {
+                const response = await fetch('php/leaderboard.php?personal=1');
+                const results = await response.json();
+                
+                // Group results by duration and get best scores
+                const bestScores = {};
+                results.forEach(result => {
+                    const duration = result.duration;
+                    if (!bestScores[duration] || result.wpm > bestScores[duration].wpm) {
+                        bestScores[duration] = result;
+                    }
+                });
+
+                // Update UI with best scores
+                [30, 60, 120].forEach(duration => {
+                    const score = bestScores[duration];
+                    if (score) {
+                        document.getElementById(`wpm${duration}`).textContent = Math.round(score.wpm);
+                        document.getElementById(`acc${duration}`).textContent = Math.round(score.accuracy) + '%';
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Failed to load performance data:', error);
+            }
+        }
+
+        // Load and manage premium status
+        async function loadPremiumStatus() {
+            try {
+                const response = await fetch('php/me.php');
+                const data = await response.json();
+                
+                if (data.authenticated && data.is_premium) {
+                    document.getElementById('premiumManagement').style.display = 'block';
+                    
+                    if (data.premium_activated_at) {
+                        const activationDate = new Date(data.premium_activated_at).toLocaleDateString();
+                        document.getElementById('activationDate').textContent = `Activated on: ${activationDate}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load premium status:', error);
+            }
+        }
+
+        // Handle premium cancellation
+        async function cancelPremium() {
+            if (!confirm('Are you sure you want to cancel your Premium subscription?\n\nYou will immediately lose access to:\n• Background Music\n• Expert Difficulty Level\n• Premium Features\n\nThis action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('php/premium.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'cancel'
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Premium subscription cancelled successfully.');
+                    // Hide premium management section
+                    document.getElementById('premiumManagement').style.display = 'none';
+                    // Reload page to update UI
+                    window.location.reload();
+                } else {
+                    alert('Failed to cancel subscription: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Cancellation error:', error);
+                alert('Failed to cancel subscription. Please try again.');
+            }
+        }
+
+        // Add event listener for cancel button
+        document.getElementById('cancelPremiumBtn').addEventListener('click', cancelPremium);
+
+        // Initialize
+        loadProfile();
+        loadPremiumStatus();
+    </script>
+
+    <!-- Voiceflow AI Assistant -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '68d8f03c526e2203edaf7968' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leaderboard • TypeLite</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand" onclick="window.location.href='index.html'" style="cursor: pointer;"><span class="brand-logo">⌨</span><span class="brand-name">TypeLite</span></div>
+      
+      <nav class="navbar-nav" id="navbarNav">
+        <a href="index.html" class="nav-link" id="navTest">Home</a>
+        <a href="leaderboard.html" class="nav-link" id="navLeaderboard">Leaderboard</a>
+      </nav>
+      <div class="navbar-actions" id="navbarActions">
+        <button class="action-btn" id="themeToggle" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+        <div class="user-menu" id="authArea"><a href="login.html" class="login-btn" id="loginLink">login</a></div>
+      </div>
+    </div>
+  </header>
+  <main class="lb-shell">
+    <aside class="lb-sidebar" aria-label="Leaderboard filters">
+      <h2 class="lb-side-heading">Filters</h2>
+      <nav class="lb-filters" id="lbFilters" aria-label="Leaderboard filter list">
+        <button class="lb-filter active" data-filter="alltime-eng-time30">All-time English<br><span>Time 30</span></button>
+        <button class="lb-filter" data-filter="alltime-eng-time60">All-time English<br><span>Time 60</span></button>
+        <button class="lb-filter" data-filter="alltime-eng-time120">All-time English<br><span>Time 120</span></button>
+        <button class="lb-filter" data-filter="weekly-xp">Weekly XP</button>
+        <button class="lb-filter" data-filter="daily">Daily</button>
+        <button class="lb-filter" data-filter="personal-time30">My Time 30</button>
+        <button class="lb-filter" data-filter="personal-time60">My Time 60</button>
+        <button class="lb-filter" data-filter="personal-time120">My Time 120</button>
+      </nav>
+      <div class="lb-meta">
+        <div class="next-update">Next update in <span id="nextUpdate">--:--</span></div>
+        <div class="lb-note">Your account must have 2 hours typed to appear.</div>
+      </div>
+    </aside>
+    <section class="lb-main" aria-label="Leaderboard results">
+      <header class="lb-header">
+        <div>
+          <h1 id="lbTitle">All-time English Time 30 Leaderboard</h1>
+          <p id="lbSub" class="lb-sub">Your account must have 2 hours typed to be placed on the leaderboard.</p>
+        </div>
+        <div class="lb-actions">
+          <button id="togglePersonal" class="mini-btn ghost" aria-pressed="false">Personal</button>
+          <button id="refreshLeaderboard" class="mini-btn">Refresh ↻</button>
+        </div>
+      </header>
+      <div class="table-wrapper">
+        <table class="lb-table" aria-describedby="lbTitle">
+          <thead>
+            <tr>
+              <th data-sort="rank" class="sortable">#</th>
+              <th>Player</th>
+              <th data-sort="wpm" class="sortable">WPM</th>
+              <th data-sort="accuracy" class="sortable">Accuracy</th>
+              <th data-sort="raw" class="sortable">Raw</th>
+              <th data-sort="date" class="sortable">Date</th>
+            </tr>
+          </thead>
+          <tbody id="lbBody"></tbody>
+        </table>
+        <div id="lbStatus" class="lb-status"></div>
+      </div>
+      <footer class="lb-footer">
+        <div class="pager">
+          <button id="prevPage" class="mini-btn" disabled aria-label="Previous page">←</button>
+          <span id="pageInfo">Page 1</span>
+          <button id="nextPage" class="mini-btn" aria-label="Next page">→</button>
+        </div>
+        <div class="sort-indicator" id="sortIndicator"></div>
+      </footer>
+    </section>
+  </main>
+  <script src="nav.js" defer></script>
+  <script src="leaderboard.js" defer></script>
+
+  <!-- Voiceflow AI Assistant -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '68d8f03c526e2203edaf7968' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>

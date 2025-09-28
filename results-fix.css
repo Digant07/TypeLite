@@ -1,0 +1,22 @@
+﻿/* Additional CSS to ensure results display properly */
+body.showing-results .music-typing-container > *:not(#resultsScreen):not(#resultsScreenBackup) {
+  display: none !important;
+}
+
+body.showing-results #resultsScreen,
+body.showing-results #resultsScreenBackup {
+  display: block !important;
+  position: fixed !important;
+  top: 64px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  background-color: var(--bg) !important;
+  overflow-y: auto !important;
+}
+
+/* If the primary results screen fails, show the backup */
+#resultsScreenBackup {
+  z-index: 10000 !important;
+}
