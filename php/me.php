@@ -7,9 +7,9 @@ if ($user) {
     json_response([
         'authenticated' => true, 
         'username' => $user['username'],
-        'email' => $user['email'],
-        'is_premium' => $user['is_premium'],
-        'premium_activated_at' => $user['premium_activated_at']
+        'email' => $user['email'] ?? null,
+        'is_premium' => (bool)($user['is_premium'] ?? false),
+        'premium_activated_at' => $user['premium_activated_at'] ?? null
     ]);
 }
 json_response(['authenticated' => false]);

@@ -1,19 +1,19 @@
 <?php
-// Profile page: only accessible after login
+
 require_once __DIR__ . '/../../lib/auth.php';
 $user = current_user();
 if (!$user) {
     header('Location: /auth/login.php');
     exit;
 }
-// Dummy stats for layout (replace with real data)
+
 $stats = [
     'level' => 1,
     'xp' => 23,
     'xp_max' => 100,
     'tests_started' => 42,
     'tests_completed' => 39,
-    'typing_time' => 3725, // seconds
+    'typing_time' => 3725,
     'best_time' => [15=>72,30=>85,60=>90,120=>88],
     'best_word' => [10=>80,25=>87,50=>89,100=>85],
     'accuracy_time' => [15=>97,30=>98,60=>99,120=>98],
@@ -45,7 +45,6 @@ function format_time($sec) {
         </ul>
     </nav>
     <main class="profile-main">
-        <!-- Sidebar (optional) -->
         <aside class="profile-sidebar compact-sidebar">
             <ul class="sidebar-menu">
                 <li><a href="#" class="sidebar-link"><span class="sidebar-icon">📊</span> User stats</a></li>
@@ -53,7 +52,7 @@ function format_time($sec) {
             </ul>
         </aside>
         <section class="profile-dashboard">
-            <!-- Top Card: User Identity -->
+            <!--User Identity -->
             <div class="profile-card identity-card">
                 <div class="profile-avatar">
                     <img src="/assets/img/avatar_default.png" alt="Avatar" id="avatar-img">
@@ -129,12 +128,12 @@ function format_time($sec) {
                             <tr><th>Date</th><th>WPM</th><th>Accuracy</th><th>Type</th></tr>
                         </thead>
                         <tbody id="historyBody">
-                            <!-- Recent tests will be loaded here by JS -->
+                           
                         </tbody>
                     </table>
                 </div>
             </div>
-            <!-- Achievements & Badges -->
+          
             <div class="profile-cards achievements-cards">
                 <div class="achievements-title">Achievements & Badges</div>
                 <div class="badges-list">
@@ -145,7 +144,7 @@ function format_time($sec) {
                 </div>
             </div>
         </section>
-        <!-- Floating profile button with logout dropdown -->
+        
         <div class="profile-float-menu">
             <button class="float-avatar-btn" id="floatAvatarBtn">
                 <span class="float-avatar-circle">DI</span>
@@ -157,7 +156,7 @@ function format_time($sec) {
             </div>
         </div>
         <script>
-        // Floating menu interactivity
+     
         const floatBtn = document.getElementById('floatAvatarBtn');
         const floatDropdown = document.getElementById('floatDropdown');
         floatBtn?.addEventListener('click', function(e){

@@ -443,6 +443,9 @@
     payload.set('accuracy', String(accuracy));
     // Store configured testSeconds only (not elapsed) for duration filter linkage
     payload.set('duration', String(testMode==='time'? testSeconds : 0));
+    // Add test_type and word_count for proper filtering
+    payload.set('test_type', testMode); // 'time' or 'word'
+    payload.set('word_count', String(testMode==='word'? testWordTarget : 0));
     // Use navigator.sendBeacon as fallback if page is unloading soon
     let saved = false;
     const controller = new AbortController();

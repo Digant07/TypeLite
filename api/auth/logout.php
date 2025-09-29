@@ -9,7 +9,7 @@ start_session();
 
 $uid = $_SESSION['uid'] ?? null;
 if ($uid) {
-    // Remove remember token if present
+    
     if (!empty($_COOKIE['remember'])) {
         $pdo = db();
         $stmt = $pdo->prepare('DELETE FROM sessions WHERE user_id = ? AND token = ?');

@@ -21,12 +21,10 @@ if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 $pdo = db();
 try {
-    $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (:u, :e, :p, :t)');
+    $stmt = $pdo->prepare('INSERT INTO users (username, password_hash) VALUES (:u, :p)');
     $stmt->execute([
         ':u' => $username,
-        ':e' => $email !== '' ? $email : null,
         ':p' => password_hash($password, PASSWORD_DEFAULT),
-        ':t' => gmdate('c'),
     ]);
 } catch (PDOException $e) {
     $msg = $e->getMessage();

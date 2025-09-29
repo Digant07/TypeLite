@@ -62,16 +62,52 @@
     if(filter.includes('time120')) return 120;
     return null;
   }
+  
+  function mapFilterToWordCount(filter){
+    if(filter.includes('word10')) return 10;
+    if(filter.includes('word25')) return 25;
+    if(filter.includes('word50')) return 50;
+    if(filter.includes('word100')) return 100;
+    return null;
+  }
 
   function isPersonalFilter(f){ return f.startsWith('personal-'); }
+  
+  function getTestType(filter) {
+    if (filter.includes('time')) return 'time';
+    if (filter.includes('word')) return 'word';
+    return 'time'; // default to time-based tests
+  }
 
   let autoRefreshTimer = null;
   function fetchData(){
     setStatus('Loading...');
-    const dur = mapFilterToDuration(currentFilter);
+    const type = getTestType(currentFilter);
     const params = new URLSearchParams();
-    if(dur) params.set('duration', String(dur));
-    if(isPersonalFilter(currentFilter)) params.set('personal','1');
+    
+    // Set test type
+    if (type) {
+      params.set('type', type);
+      
+      // Set duration or word count based on type
+      if (type === 'time') {
+        const dur = mapFilterToDuration(currentFilter);
+        if (dur) {
+          params.set('duration', String(dur));
+        }
+      } else if (type === 'word') {
+        const wordCount = mapFilterToWordCount(currentFilter);
+        if (wordCount) {
+          params.set('word_count', String(wordCount));
+        }
+      }
+    }
+    
+    // Add personal filter if needed
+    if(isPersonalFilter(currentFilter)) {
+      params.set('personal', '1');
+    }
+    
     const url = 'php/leaderboard.php' + (params.toString()? ('?'+params.toString()):'');
     return fetch(url)
       .then(r=>{
@@ -89,11 +125,15 @@
         raw: parseFloat(r.raw_wpm||r.raw||r.wpm)||0,
         consistency: parseFloat(r.consistency||r.consistency_pct||0),
         date: r.created_at || r.date || null,
-        user_id: r.user_id || r.id || null
+        user_id: r.user_id || r.id || null,
+        is_premium: r.is_premium || false
       }));
       applyFilter();
       setStatus(allRows.length? '' : 'No scores yet');
-    }).catch(err=>{ setStatus('Failed to load data'); console.warn('[Leaderboard] fetch error:', err); });
+    }).catch(err=>{ 
+      setStatus('Failed to load data'); 
+      console.warn('[Leaderboard] fetch error:', err); 
+    });
   }
 
   function startAutoRefresh(){
@@ -158,9 +198,10 @@
         const tr=document.createElement('tr');
         const globalRank = row._rankDisplay || row.rank;
         let crown = globalRank===1? '<span class="crown" title="Top score">👑</span>' : '';
+        let premiumBadge = row.is_premium ? '<span class="premium-badge" title="Premium User">⭐</span>' : '';
         tr.innerHTML = `
           <td class="rank-cell">${globalRank}</td>
-          <td class="player-cell">${crown}<span class="player-name">${row.username}</span></td>
+          <td class="player-cell">${crown}<span class="player-name">${row.username}</span>${premiumBadge}</td>
           <td>${row.wpm.toFixed(2)}</td>
           <td>${row.accuracy.toFixed(2)}%</td>
           <td>${row.raw.toFixed(2)}</td>
@@ -214,7 +255,6 @@
     currentFilter = btn.dataset.filter;
     localStorage.setItem('lbFilter', currentFilter);
     fetchData();
-    applyFilter();
   });
   refreshBtn?.addEventListener('click', () => fetchData());
   prevPageBtn?.addEventListener('click', () => { if(page>1){ page--; render(); }});
@@ -237,7 +277,6 @@
     const match = document.querySelector(`.lb-filter[data-filter="${currentFilter}"]`);
     match?.classList.add('active');
     fetchData();
-    applyFilter();
   });
   document.addEventListener('click', e => {
     const th = e.target.closest('th.sortable');

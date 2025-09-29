@@ -19,11 +19,22 @@
 
   function updateAuthUI(info){
     if(!authArea) return;
+    
+    // Enhanced debug logging
+    console.log('updateAuthUI called with:', info);
+    
     if(info && info.authenticated){
       const initials = (info.username||'?').slice(0,2).toUpperCase();
-      authArea.innerHTML = `<div class="profile-avatar" id="avatarBtn">${initials}</div><div class="dropdown" id="profileMenu" role="menu">
+      // Explicitly log premium status for debugging
+      console.log('Premium status:', info.is_premium ? 'YES' : 'NO');
+      
+      const premiumClass = info.is_premium ? ' premium' : '';
+      console.log('Adding CSS class to avatar:', premiumClass ? 'premium' : 'none');
+      
+      authArea.innerHTML = `<div class="profile-avatar${premiumClass}" id="avatarBtn">${initials}</div><div class="dropdown" id="profileMenu" role="menu">
       <div class="dropdown-header">
         <strong>${info.username || 'User'}</strong>
+        ${info.is_premium ? '<span style="color: gold; margin-left: 5px;">✦ Premium</span>' : ''}
       </div>
       <div class="dropdown-divider"></div>
       <a href="profile.html" class="dropdown-link">View Profile</a>

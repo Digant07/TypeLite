@@ -142,7 +142,7 @@
         <!-- Login Required Message (shown if not logged in) -->
         <div class="login-required" id="loginRequired" style="display: none;">
             <div class="premium-header">
-                <h1>🔐 Login Required</h1>
+                <h1>Login Required</h1>
                 <p>Please log in to upgrade to Premium</p>
             </div>
             <div style="text-align: center; margin: 2rem 0;">
@@ -154,7 +154,7 @@
         <!-- Already Premium Message -->
         <div class="already-premium" id="alreadyPremium" style="display: none;">
             <div class="premium-header">
-                <h1>🌟 You're Already Premium!</h1>
+                <h1>You're Already Premium!</h1>
                 <p>You have full access to all premium features</p>
             </div>
             <div style="text-align: center; margin: 2rem 0;">
@@ -165,7 +165,7 @@
         <!-- Premium Upgrade Form (shown if logged in and not premium) -->
         <div class="premium-upgrade" id="premiumUpgrade">
             <div class="premium-header">
-                <h1>🌟 Upgrade to Premium</h1>
+                <h1>Upgrade to Premium</h1>
                 <p>Unlock expert features and enhance your typing experience!</p>
                 <div class="user-info" id="userInfo" style="font-size: 0.9rem; color: var(--subtle); margin-top: 0.5rem;"></div>
             </div>
@@ -173,9 +173,9 @@
         <div class="premium-features">
             <h3>Premium Features Include:</h3>
             <ul class="feature-list">
-                <li>🎵 Background Music with 4 Premium Tracks</li>
-                <li>🚀 Expert Difficulty Level</li>
-                <li>🔥 Ad-Free Experience</li>
+                <li>Background Music with 4 Premium Tracks</li>
+                <li>Expert Difficulty Level</li>
+                <li>Ad-Free Experience</li>
             </ul>
         </div>
 
@@ -216,6 +216,12 @@
                 Upgrade to Premium - $9.99/month
             </button>
 
+            <!-- Success Message -->
+            <div id="successMessage" style="display: none; margin-top: 1rem; padding: 1rem; background: #10b981; color: white; border-radius: 8px; text-align: center;">
+                <h3>🎉 Payment Successful!</h3>
+                <p>Your Premium subscription is now active. Redirecting...</p>
+            </div>
+
             </div>
         </div>
     </main>
@@ -233,11 +239,8 @@
                     currentUser = data;
                     document.getElementById('userInfo').textContent = `Logged in as: ${data.username}`;
                     
-                    // Check if user is already premium
-                    const premiumResponse = await fetch('php/premium.php');
-                    const premiumData = await premiumResponse.json();
-                    
-                    if (premiumData.success && premiumData.is_premium) {
+                    // Check if user is already premium using data from me.php
+                    if (data.is_premium) {
                         showAlreadyPremium();
                     } else {
                         showPremiumUpgrade();
@@ -312,11 +315,17 @@
                 });
 
                 const result = await response.json();
+                console.log('Payment response:', result);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
                 
                 if (result.success) {
+                    alert('Payment successful! Redirecting...');
                     // Show success message
                     const successMessage = document.getElementById('successMessage');
-                    successMessage.style.display = 'block';
+                    if (successMessage) {
+                        successMessage.style.display = 'block';
+                    }
                     
                     // Redirect after 2 seconds
                     setTimeout(() => {

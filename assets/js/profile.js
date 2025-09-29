@@ -1,20 +1,18 @@
-﻿// Profile page interactivity: chart, edit buttons, filters
-// Requires Chart.js for graph (add via CDN or local)
+﻿
 document.addEventListener('DOMContentLoaded', function(){
-  // Edit username/avatar (placeholder)
+
   document.querySelector('.edit-username-btn')?.addEventListener('click', function(){
     alert('Edit username coming soon!');
   });
   document.querySelector('.edit-avatar-btn')?.addEventListener('click', function(){
     alert('Edit avatar coming soon!');
   });
-  // History filter
+ 
   document.getElementById('history-range')?.addEventListener('change', function(){
-    // TODO: fetch and filter history by range
-    // For now, just reload dummy data
+
     loadHistory(this.value);
   });
-  // Chart.js demo
+
   if(window.Chart){
     const ctx = document.getElementById('progressChart').getContext('2d');
     window.progressChart = new Chart(ctx, {
@@ -33,11 +31,10 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     });
   }
-  // Dummy history loader
+
   function loadHistory(range){
     const tbody = document.getElementById('historyBody');
     tbody.innerHTML = '';
-    // Replace with AJAX fetch for real data
     const dummy = [
       {date:'2025-09-25',wpm:85,acc:98,type:'60s'},
       {date:'2025-09-24',wpm:80,acc:97,type:'30s'},

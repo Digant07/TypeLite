@@ -291,7 +291,7 @@
     color: var(--subtle);
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     .profile-container {
         padding: 0 1rem;

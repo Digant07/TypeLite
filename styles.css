@@ -49,7 +49,7 @@ body {
   transition: background .3s ease, color .3s ease;
 }
 
-/* Fix mobile viewport gap issues */
+
 @media (max-width: 768px) {
 
   html,
@@ -59,9 +59,6 @@ body {
   }
 }
 
-/* Top bar - REMOVED OLD STYLES */
-
-/* Buttons */
 button {
   border: 0;
   background: transparent;
@@ -359,7 +356,7 @@ button.primary {
   user-select: none
 }
 
-/* Mobile Responsive Breakpoints */
+
 @media (max-width: 768px) {
   .container {
     padding: 16px;
@@ -942,7 +939,8 @@ dialog p {
   padding: 6px;
   display: none;
   flex-direction: column;
-  z-index: 20
+  z-index: 20;
+  transform: translateX(10px); /* Nudge left for better alignment */
 }
 
 .dropdown.open {
@@ -1818,7 +1816,7 @@ dialog p {
   }
 }
 
-/* --- Advanced Leaderboard Layout - Mobile Optimized --- */
+
 .lb-shell {
   max-width: 1400px;
   margin: 32px auto 80px;
@@ -2070,7 +2068,7 @@ dialog p {
   color: #cd7c0f
 }
 
-/* Player badges */
+
 .player-badge {
   background: rgba(124, 58, 237, .2);
   color: var(--accent);
@@ -2102,7 +2100,7 @@ dialog p {
   color: var(--subtle)
 }
 
-/* Enhanced Mobile Leaderboard Responsiveness */
+
 @media (max-width:1150px) {
   .lb-shell {
     grid-template-columns: 200px 1fr;
@@ -2204,7 +2202,6 @@ dialog p {
     border-radius: 12px
   }
 
-  /* Hide less important columns on mobile */
   .lb-table thead th:nth-child(5),
   .lb-table thead th:nth-child(6) {
     display: none
@@ -2736,19 +2733,26 @@ dialog p {
 
 /* Premium Feature Styles */
 .premium-badge {
-  font-size: 0.6rem;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
-  color: #333;
-  padding: 0.15rem 0.3rem;
-  border-radius: 4px;
-  font-weight: bold;
-  margin-left: 0.5rem;
-  text-shadow: none;
-  box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3);
-  position: relative;
-  top: -1px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  display: inline-block;
+  margin-left: 0.4rem;
+  color: #fbbf24;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.premium-badge:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: #f59e0b;
+}
+
+@media (max-width: 768px) {
+  .premium-badge {
+    font-size: 0.7rem;
+    margin-left: 0.3rem;
+  }
 }
 
 .premium-locked {
@@ -2808,34 +2812,6 @@ dialog p {
 .upgrade-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
-}
-
-.premium-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  background: linear-gradient(45deg, #22c55e, #16a34a);
-  color: white;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  position: fixed;
-  top: 1rem;
-  right: 4.5rem;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
-  transition: all var(--transition);
-}
-
-.premium-status:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-  background: linear-gradient(45deg, #16a34a, #15803d);
-}
-
-.premium-status:before {
-  content: "👑";
 }
 
 /* Premium Management Section */
@@ -2926,4 +2902,140 @@ dialog p {
   font-size: 0.85rem;
   margin: 0;
   line-height: 1.4;
+}
+
+/* Premium Avatar Ring Effects */
+.profile-avatar.premium {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent), #4f46e5);
+  animation: none; /* Remove background animation, use ring instead */
+  border: 2px solid transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+  z-index: 1; /* Ensure avatar stays above the ring */
+}
+
+.profile-avatar.premium::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: conic-gradient(from 0deg, #fbbf24, #f59e0b, #d97706, #dc2626, #f59e0b, #fbbf24);
+  border-radius: 50%;
+  z-index: -1;
+  animation: premiumRing 3s linear infinite;
+  filter: blur(1px);
+}
+
+.profile-avatar.premium::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: conic-gradient(from 0deg, #fbbf24, #f59e0b, #d97706, #dc2626, #f59e0b, #fbbf24);
+  border-radius: 50%;
+  z-index: -1;
+  animation: premiumRing 3s linear infinite reverse; /* Reverse direction for more dynamic effect */
+  opacity: 0.8;
+}
+
+@keyframes premiumRing {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Make sure premium avatar has higher z-index than normal elements */
+.navbar-actions .profile-avatar.premium {
+  position: relative;
+  z-index: 2;
+  /* Make the ring more visible with a slight scale */
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments for premium ring */
+@media (max-width: 768px) {
+  .profile-avatar.premium::before {
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    filter: blur(0.5px);
+  }
+  
+  .profile-avatar.premium::after {
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+  }
+  
+  .avatar-circle.premium::before {
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    filter: blur(0.5px);
+  }
+  
+  .avatar-circle.premium::after {
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+  }
+}
+
+.avatar-circle.premium {
+  position: relative;
+  border: 3px solid transparent;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-circle.premium::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  background: conic-gradient(from 0deg, #fbbf24, #f59e0b, #d97706, #dc2626, #f59e0b, #fbbf24);
+  border-radius: 50%;
+  z-index: -1;
+  animation: premiumRing 3s linear infinite;
+  filter: blur(1px);
+}
+
+.avatar-circle.premium::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: conic-gradient(from 0deg, #fbbf24, #f59e0b, #d97706, #dc2626, #f59e0b, #fbbf24);
+  border-radius: 50%;
+  z-index: -1;
+  animation: premiumRing 3s linear infinite;
+  opacity: 0.8;
+}
+
+.avatar-circle.premium::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
+  background-size: 400% 400%;
+  border-radius: 50%;
+  z-index: -1;
+  animation: premiumShine 3s ease-in-out infinite;
 }

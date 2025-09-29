@@ -8,7 +8,7 @@
     els('emptyChartState').style.display='block';
     return;
   }
-  // Primary + secondary
+  
   els('rWpm').textContent = data.wpm;
   els('rAccuracy').textContent = `Accuracy ${data.accuracy}%`;
   els('rRawWpm').textContent = data.rawWpm;
@@ -16,8 +16,8 @@
   els('rErrorsPerSec').textContent = data.errorsPerSec.toFixed(2);
   els('rDuration').textContent = data.duration + 's';
   
-  // World Record Comparison
-  const worldRecord = 216; // Barbara Blackburn's world record
+  
+  const worldRecord = 216; 
   const userWpm = data.wpm;
   const percentage = Math.min(100, (userWpm / worldRecord * 100));
   const gap = Math.max(0, worldRecord - userWpm);
@@ -28,7 +28,7 @@
   els('wrProgressFill').style.width = percentage + '%';
   els('wrProgressMarker').style.left = percentage + '%';
   
-  // Dynamic motivation message based on performance
+ e
   const motivationEl = els('wrMotivation');
   if (userWpm >= 200) {
     motivationEl.textContent = '🏆 Incredible! You\'re approaching legendary typing speeds!';
@@ -48,19 +48,19 @@
     motivationEl.textContent = '🌱 Great start! Every expert was once a beginner!';
   }
   
-  // Breakdown
   els('rCorrect').textContent = data.correct;
   els('rIncorrect').textContent = data.incorrect;
   els('rMissed').textContent = data.missed;
   els('rExtra').textContent = data.extra;
-  // Info list
+  
+
   const info = els('rInfoList');
   const addInfo = (label,val)=>{ const li=document.createElement('li'); li.innerHTML=`<span>${label}</span><span>${val}</span>`; info.appendChild(li); };
   addInfo('Test Type', data.testMode === 'time' ? `Time (${data.duration}s)` : `Words (${data.wordTarget})`);
   addInfo('Difficulty', data.difficulty);
   addInfo('Language', data.language || 'english');
   addInfo('Completed', new Date(data.completedAt).toLocaleString());
-  // Chart
+
   const samples = data.samples || [];
   if(!samples.length){
     els('emptyChartState').style.display='block';
@@ -77,7 +77,7 @@
     const h = canvas.height - padding*2;
     const maxWpm = Math.max(60, ...samples.map(s=>s.wpm));
     const maxErr = Math.max(1, ...samples.map(s=>s.errors));
-    // axes
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -85,7 +85,7 @@
     ctx.lineTo(padding, padding+h);
     ctx.lineTo(padding+w, padding+h);
     ctx.stroke();
-    // grid horizontal
+    
     ctx.font='12px Inter';
     ctx.fillStyle='rgba(255,255,255,0.35)';
     ctx.textBaseline='middle';
@@ -97,17 +97,20 @@
       const label = Math.round((maxWpm/steps)*i);
       ctx.fillText(String(label), 8, y);
     }
-    // map functions
+    
+
     const xFor = i => padding + (w*(i/(samples.length-1||1)));
     const yForWpm = v => padding + h - (v/maxWpm)*h;
     const yForErr = v => padding + h - (v/maxErr)*h;
-    // WPM line
+   
+
     ctx.strokeStyle = '#7c3aed';
     ctx.lineWidth = 2;
     ctx.beginPath();
     samples.forEach((s,i)=>{ const x=xFor(i), y=yForWpm(s.wpm); i? ctx.lineTo(x,y):ctx.moveTo(x,y); });
     ctx.stroke();
-    // Avg line (dotted)
+   
+    
     const avg = samples.reduce((a,b)=>a+b.wpm,0)/samples.length;
     ctx.setLineDash([6,6]);
     ctx.strokeStyle='rgba(124,58,237,.5)';
@@ -116,13 +119,13 @@
     ctx.lineTo(padding+w, yForWpm(avg));
     ctx.stroke();
     ctx.setLineDash([]);
-    // Errors line (secondary scale overlay)
+
     ctx.strokeStyle='#ef4444';
     ctx.lineWidth=1.5;
     ctx.beginPath();
     samples.forEach((s,i)=>{ const x=xFor(i), y=yForErr(s.errors); i? ctx.lineTo(x,y):ctx.moveTo(x,y); });
     ctx.stroke();
-    // Points
+  
     samples.forEach((s,i)=>{
       const x=xFor(i), y=yForWpm(s.wpm);
       ctx.fillStyle='#7c3aed';
@@ -133,7 +136,7 @@
     });
   }
 
-  // Actions
+  
   document.getElementById('retryBtn')?.addEventListener('click', ()=>{ sessionStorage.setItem('prefillMode', data.testMode); location.href='index.html'; });
   document.getElementById('shareBtn')?.addEventListener('click', ()=>{
     const summary = `Typing Result: ${data.wpm} WPM (${data.accuracy}% acc) over ${data.duration}s - Consistency ${data.consistency}%`;

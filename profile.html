@@ -35,7 +35,7 @@
         <div class="user-header">
             <div class="user-avatar">
                 <div class="avatar-circle" id="userAvatar">DI</div>
-                <button class="edit-btn">✏️</button>
+                
             </div>
             <div class="user-info">
                 <h1 class="username" id="userName">Digant2332</h1>
@@ -114,13 +114,13 @@
             </div>
         </div>
 
-        <!-- Premium Management Section -->
+      
         <div class="premium-management" id="premiumManagement" style="display: none;">
             <h2 class="section-title">Premium Subscription</h2>
             <div class="premium-info">
                 <div class="premium-status-card">
                     <div class="premium-header">
-                        <span class="premium-crown">👑</span>
+                        <span class="premium-crown"></span>
                         <div>
                             <h3>Premium Active</h3>
                             <p class="activation-date" id="activationDate">Activated on: -</p>
@@ -129,9 +129,9 @@
                     <div class="premium-features">
                         <h4>Premium Features:</h4>
                         <ul>
-                            <li>🎵 Background Music</li>
-                            <li>🚀 Expert Difficulty Level</li>
-                            <li>🔥 Ad-Free Experience</li>
+                            <li>Background Music</li>
+                            <li>Expert Difficulty Level</li>
+                            <li>Ad-Free Experience</li>
                         </ul>
                     </div>
                     <div class="premium-actions">
@@ -145,7 +145,7 @@
 
     <script src="nav.js"></script>
     <script>
-        // Load user profile data
+        
         async function loadProfile() {
             try {
                 const response = await fetch('php/user_stats.php');
@@ -155,9 +155,17 @@
                     document.getElementById('userName').textContent = data.username;
                     document.getElementById('userAvatar').textContent = data.username.slice(0,2).toUpperCase();
 
+                   
+                    const avatar = document.getElementById('userAvatar');
+                    if (data.is_premium) {
+                        avatar.classList.add('premium');
+                    } else {
+                        avatar.classList.remove('premium');
+                    }
+
                     document.getElementById('testsCompleted').textContent = data.stats.tests_taken || 0;
                     
-                    // Format typing time from seconds to HH:MM:SS
+                    
                     const totalSeconds = data.stats.total_typing_time || 0;
                     const hours = Math.floor(totalSeconds / 3600);
                     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -165,7 +173,7 @@
                     const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                     document.getElementById('timeTyping').textContent = formattedTime;
                     
-                    // Load detailed performance data
+                   
                     loadPerformanceData();
                 }
             } catch (error) {
@@ -175,24 +183,63 @@
 
         async function loadPerformanceData() {
             try {
-                const response = await fetch('php/leaderboard.php?personal=1');
-                const results = await response.json();
+               
+                const DEBUG = true;
                 
-                // Group results by duration and get best scores
-                const bestScores = {};
-                results.forEach(result => {
-                    const duration = result.duration;
-                    if (!bestScores[duration] || result.wpm > bestScores[duration].wpm) {
-                        bestScores[duration] = result;
+                
+                if (DEBUG) console.log('Fetching time-based results...');
+                const timeResponse = await fetch('php/leaderboard.php?personal=1&type=time');
+                const timeResults = await timeResponse.json();
+                if (DEBUG) console.log('Time results:', timeResults);
+                
+              
+                const bestTimeScores = {};
+                timeResults.forEach(result => {
+                    const duration = result.test_time;
+                    if (DEBUG) console.log(`Processing time result: duration=${duration}, wpm=${result.wpm}`);
+                    if (!bestTimeScores[duration] || result.wpm > bestTimeScores[duration].wpm) {
+                        bestTimeScores[duration] = result;
                     }
                 });
+                if (DEBUG) console.log('Best time scores:', bestTimeScores);
 
-                // Update UI with best scores
-                [30, 60, 120].forEach(duration => {
-                    const score = bestScores[duration];
+               
+                [15, 30, 60, 120].forEach(duration => {
+                    const score = bestTimeScores[duration];
                     if (score) {
+                        if (DEBUG) console.log(`Setting time UI for ${duration}s: WPM=${Math.round(score.wpm)}, ACC=${Math.round(score.accuracy)}%`);
                         document.getElementById(`wpm${duration}`).textContent = Math.round(score.wpm);
                         document.getElementById(`acc${duration}`).textContent = Math.round(score.accuracy) + '%';
+                    } else {
+                        if (DEBUG) console.log(`No score found for ${duration}s test`);
+                    }
+                });
+                
+            
+                if (DEBUG) console.log('Fetching word-based results...');
+                const wordResponse = await fetch('php/leaderboard.php?personal=1&type=word');
+                const wordResults = await wordResponse.json();
+                if (DEBUG) console.log('Word results:', wordResults);
+                
+                
+                const bestWordScores = {};
+                wordResults.forEach(result => {
+                    const wordCount = result.word_count;
+                    if (DEBUG) console.log(`Processing word result: count=${wordCount}, wpm=${result.wpm}`);
+                    if (!bestWordScores[wordCount] || result.wpm > bestWordScores[wordCount].wpm) {
+                        bestWordScores[wordCount] = result;
+                    }
+                });
+                if (DEBUG) console.log('Best word scores:', bestWordScores);
+
+                [10, 25, 50, 100].forEach(wordCount => {
+                    const score = bestWordScores[wordCount];
+                    if (score) {
+                        if (DEBUG) console.log(`Setting word UI for ${wordCount} words: WPM=${Math.round(score.wpm)}, ACC=${Math.round(score.accuracy)}%`);
+                        document.getElementById(`wpmw${wordCount}`).textContent = Math.round(score.wpm);
+                        document.getElementById(`accw${wordCount}`).textContent = Math.round(score.accuracy) + '%';
+                    } else {
+                        if (DEBUG) console.log(`No score found for ${wordCount} words test`);
                     }
                 });
                 
@@ -201,7 +248,6 @@
             }
         }
 
-        // Load and manage premium status
         async function loadPremiumStatus() {
             try {
                 const response = await fetch('php/me.php');
@@ -220,14 +266,13 @@
             }
         }
 
-        // Handle premium cancellation
         async function cancelPremium() {
             if (!confirm('Are you sure you want to cancel your Premium subscription?\n\nYou will immediately lose access to:\n• Background Music\n• Expert Difficulty Level\n• Premium Features\n\nThis action cannot be undone.')) {
                 return;
             }
 
             try {
-                const response = await fetch('php/premium.php', {
+                const response = await fetch('php/simple-cancel.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -241,9 +286,9 @@
                 
                 if (result.success) {
                     alert('Premium subscription cancelled successfully.');
-                    // Hide premium management section
+                    
                     document.getElementById('premiumManagement').style.display = 'none';
-                    // Reload page to update UI
+                 
                     window.location.reload();
                 } else {
                     alert('Failed to cancel subscription: ' + (result.error || 'Unknown error'));
@@ -254,10 +299,10 @@
             }
         }
 
-        // Add event listener for cancel button
+        
         document.getElementById('cancelPremiumBtn').addEventListener('click', cancelPremium);
 
-        // Initialize
+       
         loadProfile();
         loadPremiumStatus();
     </script>

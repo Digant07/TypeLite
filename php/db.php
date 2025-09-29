@@ -1,10 +1,14 @@
-﻿<?php
+<?php
 declare(strict_types=1);
 
-// Simple SQLite connection and schema bootstrap
-// Database file will be created in the parent directory under data.sqlite
 
 session_start();
+
+
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'typing_test');
+define('DB_USER', 'root');
+define('DB_PASS', ''); 
 
 function db(): PDO {
     static $pdo = null;
@@ -12,124 +16,106 @@ function db(): PDO {
         return $pdo;
     }
 
-    // Ensure the PDO SQLite driver is available
-    if (!in_array('sqlite', PDO::getAvailableDrivers(), true)) {
+   
+    if (!in_array('mysql', PDO::getAvailableDrivers(), true)) {
         json_response([
             'success' => false,
-            'error' => 'PDO SQLite driver not installed/enabled. Enable pdo_sqlite and sqlite3 in php.ini.'
+            'error' => 'PDO MySQL driver not installed/enabled. Enable pdo_mysql in php.ini.'
         ], 500);
     }
 
-    $dbPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data.sqlite';
-    $pdo = new PDO('sqlite:' . $dbPath, null, null, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    try {
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+        ]);
 
-    // Always ensure schema is present and migrated
-    bootstrap($pdo);
-    migrate($pdo);
+       
+        bootstrap($pdo);
+
+    } catch (PDOException $e) {
+        json_response([
+            'success' => false,
+            'error' => 'Database connection failed: ' . $e->getMessage()
+        ], 500);
+    }
 
     return $pdo;
 }
 
 function bootstrap(PDO $pdo): void {
-    $pdo->exec('PRAGMA journal_mode = WAL');
-    $pdo->exec('PRAGMA foreign_keys = ON');
+   
+    $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(255) NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        is_premium BOOLEAN DEFAULT FALSE,
+        premium_activated_at TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    $pdo->exec('CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        email TEXT NULL UNIQUE,
-        password_hash TEXT NOT NULL,
-        created_at TEXT NOT NULL
-    )');
+   
+    $pdo->exec("CREATE TABLE IF NOT EXISTS results (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NULL,
+        wpm INT NOT NULL DEFAULT 0,
+        accuracy FLOAT NOT NULL DEFAULT 0,
+        raw_wpm INT DEFAULT 0,
+        consistency INT DEFAULT 0,
+        errors_per_sec FLOAT DEFAULT 0,
+        duration INT DEFAULT 0,
+        test_time INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_user_id (user_id),
+        INDEX idx_wpm (wpm),
+        INDEX idx_created_at (created_at),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    $pdo->exec('CREATE TABLE IF NOT EXISTS results (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NULL,
-        wpm INTEGER NOT NULL,
-        accuracy INTEGER NOT NULL,
-        created_at TEXT NOT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL
-    )');
-}
-
-function migrate(PDO $pdo): void {
-    // Ensure email column exists on users table for older databases
-    $cols = $pdo->query('PRAGMA table_info(users)')->fetchAll();
-    $hasEmail = false;
-    $hasPremium = false;
-    $hasPremiumDate = false;
-    foreach ($cols as $c) {
-        $colName = $c['name'] ?? ($c[1] ?? null); // SQLite may return both assoc and numeric keys
-        if ($colName === 'email') { $hasEmail = true; }
-        if ($colName === 'is_premium') { $hasPremium = true; }
-        if ($colName === 'premium_activated_at') { $hasPremiumDate = true; }
-    }
-    if (!$hasEmail) {
-        // SQLite supports ADD COLUMN without IF NOT EXISTS; we only run it if missing
-        $pdo->exec('ALTER TABLE users ADD COLUMN email TEXT NULL');
-        // Best-effort unique index on email
-        try { $pdo->exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)'); } catch (Throwable $e) {}
-    }
-    if (!$hasPremium) {
-        $pdo->exec('ALTER TABLE users ADD COLUMN is_premium INTEGER NOT NULL DEFAULT 0');
-    }
-    if (!$hasPremiumDate) {
-        $pdo->exec('ALTER TABLE users ADD COLUMN premium_activated_at TEXT NULL');
-    }
-
-    // Ensure duration column exists on results (stores test length in seconds for time mode; 0 for words mode)
-    $rCols = $pdo->query('PRAGMA table_info(results)')->fetchAll();
-    $hasDuration = false; $hasRaw=false; $hasConsistency=false; $hasErrorsPerSec=false;
-    foreach($rCols as $c){
-        $colName = $c['name'] ?? ($c[1] ?? null);
-        if($colName === 'duration') $hasDuration = true;
-        if($colName === 'raw_wpm') $hasRaw = true;
-        if($colName === 'consistency') $hasConsistency = true;
-        if($colName === 'errors_per_sec') $hasErrorsPerSec = true;
-    }
+    
     try {
-        if(!$hasDuration){ $pdo->exec('ALTER TABLE results ADD COLUMN duration INTEGER NOT NULL DEFAULT 0'); }
-        if(!$hasRaw){ $pdo->exec('ALTER TABLE results ADD COLUMN raw_wpm INTEGER NOT NULL DEFAULT 0'); }
-        if(!$hasConsistency){ $pdo->exec('ALTER TABLE results ADD COLUMN consistency INTEGER NOT NULL DEFAULT 0'); }
-        if(!$hasErrorsPerSec){ $pdo->exec('ALTER TABLE results ADD COLUMN errors_per_sec REAL NOT NULL DEFAULT 0'); }
-    } catch (Throwable $e) {}
-    // Indexes
-    try { $pdo->exec('CREATE INDEX IF NOT EXISTS idx_results_duration ON results(duration)'); } catch (Throwable $e) {}
-    try { $pdo->exec('CREATE INDEX IF NOT EXISTS idx_results_wpm ON results(wpm)'); } catch (Throwable $e) {}
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_results_user_wpm ON results(user_id, wpm DESC)");
+    } catch (PDOException $e) {
+       
+    }
 }
 
 function current_user(): ?array {
-    if (!isset($_SESSION['user_id'], $_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         return null;
     }
     
-    // Get user data from database including premium status
+    static $user = null;
+    if ($user !== null) {
+        return $user;
+    }
+    
     $pdo = db();
-    $stmt = $pdo->prepare('SELECT id, username, email, is_premium, premium_activated_at FROM users WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
     $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch() ?: null;
     
-    if (!$user) {
-        return null;
-    }
-    
-    return [
-        'id' => (int)$user['id'],
-        'username' => (string)$user['username'],
-        'email' => $user['email'],
-        'is_premium' => (bool)$user['is_premium'],
-        'premium_activated_at' => $user['premium_activated_at'],
-    ];
+    return $user;
 }
 
 function json_response($data, int $code = 200): void {
     http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($data);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
+function validate_email(string $email): bool {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
 
+function hash_password(string $password): string {
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+function verify_password(string $password, string $hash): bool {
+    return password_verify($password, $hash);
+}
