@@ -1,17 +1,9 @@
-## Typing Test App
-
-Minimal, responsive typing test inspired by Monkeytype. Frontend (HTML/CSS/JS) and PHP backend with SQLite for auth, results, and leaderboard.
-
-### Prerequisites
-- PHP 8.1+
 
 ### Run locally (PHP built-in server)
 ```bash
 php -S 127.0.0.1:8000 -t "C:\\Users\\digan\\Coding files\\WT Project"
 ```
 Then open `http://127.0.0.1:8000/index.html`.
-
-On first run, SQLite database `data.sqlite` is created automatically in the project root.
 
 ### Features
 - Timed and word-count modes
