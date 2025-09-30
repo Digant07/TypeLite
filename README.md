@@ -1,9 +1,8 @@
-
-### Run locally (PHP built-in server)
-```bash
-php -S 127.0.0.1:8000 -t "C:\\Users\\digan\\Coding files\\WT Project"
-```
-Then open `http://127.0.0.1:8000/index.html`.
+For running locally 
+step 1:
+start xampp server mysql
+step 2:
+php -S localhost:8000 in terminal
 
 ### Features
 - Timed and word-count modes
@@ -11,15 +10,8 @@ Then open `http://127.0.0.1:8000/index.html`.
 - Error highlighting, backspace handling
 - Dark/light theme toggle (persisted)
 - Auth (register/login), save results, leaderboard
-- **Music-Synced Typing**: New rhythm-based typing test with beat detection and music integration
+- Type while playing you favourite music
 
-### File structure
-- `index.html`, `styles.css`, `app.js`
-- `php/` server endpoints: `db.php`, `register.php`, `login.php`, `save_result.php`, `leaderboard.php`
-
-### Notes
-- Passwords are hashed via `password_hash`.
-- Results can be saved anonymously; `username` shows as Guest on leaderboard.
 
 
 
